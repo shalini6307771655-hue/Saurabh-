@@ -1,0 +1,80 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile for ChatFlow user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Auth UID of the user" },
+        "displayName": { "type": "string", "description": "Display name of the user" },
+        "username": { "type": "string", "description": "Unique username handle" },
+        "email": { "type": "string", "description": "Email address" },
+        "photoUrl": { "type": "string", "description": "Profile picture URL or avatar" },
+        "bio": { "type": "string", "description": "Status quote or biography" },
+        "status": { "type": "string", "description": "Presence status (online, offline, away)" },
+        "lastSeen": { "type": "string", "format": "date-time", "description": "Last presence timestamp" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["userId", "displayName", "username", "createdAt", "updatedAt"]
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "Chat thread between two or more participants",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["direct", "group"], "description": "Conversation type" },
+        "participantIds": { "type": "array", "description": "UIDs of members in this conversation" },
+        "name": { "type": "string", "description": "Group name or direct title" },
+        "groupDescription": { "type": "string", "description": "Description of the group" },
+        "groupIconUrl": { "type": "string", "description": "Group icon URL" },
+        "adminIds": { "type": "array", "description": "UIDs of group administrators" },
+        "lastMessageText": { "type": "string", "description": "Snippet of latest message" },
+        "lastMessageSenderId": { "type": "string", "description": "UID of sender of latest message" },
+        "lastMessageSenderName": { "type": "string", "description": "Name of sender of latest message" },
+        "lastMessageTimestamp": { "type": "string", "format": "date-time", "description": "Timestamp of latest message" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["type", "participantIds", "createdAt", "updatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message sent inside a conversation",
+      "type": "object",
+      "properties": {
+        "conversationId": { "type": "string", "description": "Parent conversation ID" },
+        "senderId": { "type": "string", "description": "Author UID" },
+        "senderName": { "type": "string", "description": "Author display name" },
+        "senderPhotoUrl": { "type": "string", "description": "Author avatar URL" },
+        "text": { "type": "string", "description": "Text body of the message" },
+        "mediaType": { "type": "string", "description": "Type of media (none, image, file, audio)" },
+        "mediaUrl": { "type": "string", "description": "Media URL if attached" },
+        "mediaName": { "type": "string", "description": "Media filename if attached" },
+        "reactions": { "type": "object", "description": "Map of user reactions" },
+        "replyToMessageId": { "type": "string", "description": "Referenced parent message ID" },
+        "replyToText": { "type": "string", "description": "Referenced parent message snippet" },
+        "replyToSender": { "type": "string", "description": "Referenced parent message sender name" },
+        "isEdited": { "type": "boolean", "description": "Whether message has been edited" },
+        "participantIds": { "type": "array", "description": "Denormalized conversation member UIDs for local evaluation" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["conversationId", "senderId", "senderName", "text", "participantIds", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles and status"
+    },
+    "/conversations/{conversationId}": {
+      "schema": "Conversation",
+      "description": "Conversations and group channels"
+    },
+    "/conversations/{conversationId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Chat messages in conversation threads"
+    }
+  }
+}
